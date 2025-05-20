@@ -16,7 +16,7 @@ app.post("/order", (req, res) => {
     userId,
     price,
     quantity,
-  }
+  };
 
   // if the current order can be filled it will be filled and remaining quantity of the order will be returned
   // example if user place 2QTY for bid and there only match for 1QTY that will be filled and remaining 1QTY is returned
@@ -109,21 +109,21 @@ app.get("/balance/:userId", (req, res) => {
 });
 
 // to get the quote price to buy x number of stocks. basically need to return the average price of / unit stock for user to buy x amount based on the asks in the orderbook
-app.post("/quote",(req,res)=>{
-    let qty = req.body.qty;
-    let quotePrice = 0;
-    for(let i = asks.length-1; i>=0; i++){
-      if(asks[i].quantity > qty){
-        quotePrice += (qty*asks[i].price);
-        break; 
+app.post("/quote", (req, res) => {
+  let qty = req.body.qty;
+  let quotePrice = 0;
+  for (let i = asks.length - 1; i >= 0; i++) {
+    if (asks[i].quantity > qty) {
+      quotePrice += qty * asks[i].price;
+      break;
     }
-      quotePrice += (asks[i].price*asks[i].quantity);
-      qty -= asks[i].quantity;
-    }
-    res.json({
-      quote:quotePrice
-    })
-})
+    quotePrice += asks[i].price * asks[i].quantity;
+    qty -= asks[i].quantity;
+  }
+  res.json({
+    quote: quotePrice,
+  });
+});
 
 app.listen(PORT, () => {
   // console.log(`listening to port ${PORT}`);
