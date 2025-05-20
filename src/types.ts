@@ -4,7 +4,7 @@ export interface Balances {
 
 export interface User {
   id: string;
-  balance: Balances;
+  balances: Balances;
 }
 
 export interface Order {
@@ -19,7 +19,7 @@ export interface FillOrder {
 }
 
 export interface Depth {
-  [price: number]: {
+  [price: string]: {
     type: "ask" | "bid";
     quantity: number;
   };
@@ -28,22 +28,19 @@ export interface Depth {
 export const bids: Order[] = [];
 export const asks: Order[] = [];
 
-export const users: User[] = [
-  {
-    id: "1",
-    balance: {
-      GOGLE: 10,
-      USD: 50000,
-    },
-  },
-  {
-    id: "2",
-    balance: {
-      GOGLE: 10,
-      USD: 50000,
-    },
-  },
-];
+export const users: User[] = [{
+  id: "1",
+  balances: {
+    "GOOGLE": 10,
+    "USD": 50000
+  }
+}, {
+  id: "2",
+  balances: {
+    "GOOGLE": 10,
+    "USD": 50000
+  }
+}];
 
 export const PORT = 3000;
 

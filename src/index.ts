@@ -1,14 +1,23 @@
 import express from "express";
 import { asks, bids, Depth, Order, PORT, TICKER, users } from "./types";
 import { fillOrders } from "./utils";
-const app = express();
+export const app = express();
 
 app.use(express.json());
 
 // route to place a limit order
 app.post("/order", (req, res) => {
   const side = req.body.side; // can be either ask or bid
-  const order: Order = req.body.order;
+  const price: number = req.body.price;
+  const quantity: number = req.body.quantity;
+  const userId: string = req.body.userId;
+
+  const order: Order = {
+    userId,
+    price,
+    quantity,
+  }
+
   // if the current order can be filled it will be filled and remaining quantity of the order will be returned
   // example if user place 2QTY for bid and there only match for 1QTY that will be filled and remaining 1QTY is returned
   const remainingQty = fillOrders({ side, order });
@@ -16,11 +25,11 @@ app.post("/order", (req, res) => {
   if (remainingQty === 0) {
     res.json({
       message: `Order filled for ${order.quantity} QTY`,
-      filledQty: order.quantity,
+      filledQuantity: order.quantity,
     });
     return;
   }
-  if (side === "bids") {
+  if (side === "bid") {
     bids.push({
       userId: order.userId,
       price: order.price,
@@ -41,7 +50,7 @@ app.post("/order", (req, res) => {
   //[high ask........low ask] <-> [high bid......low bid] in order book
   res.json({
     message: `Order filled for ${order.quantity - remainingQty} QTY`,
-    filledQty: order.quantity - remainingQty,
+    filledQuantity: order.quantity - remainingQty,
     remainingQty: remainingQty,
   });
   return;
@@ -87,7 +96,7 @@ app.get("/balance/:userId", (req, res) => {
   if (!user) {
     res.json({
       message: `User with the given id not found`,
-      balance: {
+      balances: {
         USD: 0,
         [TICKER]: 0,
       },
@@ -95,14 +104,27 @@ app.get("/balance/:userId", (req, res) => {
     return;
   }
   res.json({
-    balance: user.balance,
+    balances: user.balances,
   });
 });
 
-app.get("/quote",(req,res)=>{
-    
+// to get the quote price to buy x number of stocks. basically need to return the average price of / unit stock for user to buy x amount based on the asks in the orderbook
+app.post("/quote",(req,res)=>{
+    let qty = req.body.qty;
+    let quotePrice = 0;
+    for(let i = asks.length-1; i>=0; i++){
+      if(asks[i].quantity > qty){
+        quotePrice += (qty*asks[i].price);
+        break; 
+    }
+      quotePrice += (asks[i].price*asks[i].quantity);
+      qty -= asks[i].quantity;
+    }
+    res.json({
+      quote:quotePrice
+    })
 })
 
 app.listen(PORT, () => {
-  console.log(`listening to port ${PORT}`);
+  // console.log(`listening to port ${PORT}`);
 });

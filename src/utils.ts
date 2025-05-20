@@ -57,8 +57,8 @@ const flipBalance = (
   if (!user1 || !user2) {
     return;
   }
-  user1.balance["USD"] += quantity * price;
-  user2.balance["USD"] -= quantity * price;
-  user1.balance[TICKER] -= quantity;
-  user2.balance[TICKER] += quantity;
+  user1.balances["USD"] += (quantity * price);
+  user2.balances["USD"] -= (quantity * price);
+  user1.balances[TICKER] -= quantity;
+  user2.balances[TICKER] += quantity;
 };
