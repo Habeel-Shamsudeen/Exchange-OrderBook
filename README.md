@@ -71,6 +71,8 @@ Balance:
 
 ---
 
-### 💬 GET `/quote` *(To be implemented)*
-Reserved for future implementation. Intended to return market quote information such as best bid/ask or last traded price.
+### 💬 POST `/quote`
+
+Returns the best price quote to fulfill a requested quantity from the order book. Currently supports quoting for the `bid` side (i.e., simulating a market buy against existing ask orders).
+
 
